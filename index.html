@@ -50,33 +50,21 @@
                 </div>
                 <div class="card-action">
                     <h5 id="task-title">Tasks</h5>
-                    <ul class="collection"></ul>
-                    <a href="#" class="clear-tasks btn black">Clear All Tasks</a>
+                    <ul id="task-list" class="collection"></ul>
+                    <a href="#" id="clear-tasks" class="btn black">Clear All Tasks</a>
                 </div>
                 <div class="card-action">
                     <h5 id="completed-task-title">Completed Tasks</h5>
-                    <ul class="completed-tasks collection"></ul>
-                    <a href="#" class="clear-completed-tasks btn black">Clear All Tasks</a>
+                    <ul id="completed-tasks" class="collection"></ul>
+                    <a href="#" id="clear-completed-tasks" class="btn black">Clear Completed Tasks</a>
                 </div>
             </div>
         </div>
     </div>
    </div>
 
-    <script
-        src="https://code.jquery.com/jquery-3.7.1.js"
-        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
-        crossorigin="anonymous"
-    ></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="./app.js"></script>
-    <script>
-        // Initialize date picker
-        var elems = document.querySelectorAll('.datepicker');
-        var options = {
-            format: 'yyyy-mm-dd',
-        };
-        var instances = M.Datepicker.init(elems, options);
-    </script>
 </body>
 </html>
