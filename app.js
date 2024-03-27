@@ -1,24 +1,18 @@
 //Variables:
 const form = document.querySelector('#task-form');
-const taskList = document.querySelector('.collection');
-const completedTasks = document.querySelector('.completed-tasks');
-const clearBtn = document.querySelector('.clear-tasks');
-const clearCompletedBtn = document.querySelector('.clear-completed-tasks');
+const taskList = document.querySelector('#task-list');
+const completedTasks = document.querySelector('#completed-tasks');
+const clearBtn = document.querySelector('#clear-tasks');
+const clearCompletedBtn = document.querySelector('#clear-completed-tasks');
 const taskInput = document.querySelector('#task');
 
 // Event load function
 loadFunction();
 
 function loadFunction() {
-    // Add task
     form.addEventListener('submit', addTask);
-    // Remove tasks
     taskList.addEventListener('click', removeTask);
-    // Clear tasks
     clearBtn.addEventListener('click', clearTasks);
-    //remove completed tasks
-    completedTasks.addEventListener('click', removeCompletedTask);
-    // Clear completed tasks
     clearCompletedBtn.addEventListener('click', clearCompletedTasks);
 }
 
@@ -30,13 +24,8 @@ function addTask(e) {
     const priority = document.querySelector('input[name="priority"]:checked');
     const dueDate = document.querySelector('#due-date').value;
 
-    if (taskDescription === '') {
-        alert('Please add a task');
-        return;
-    }
-
-    if (!priority) {
-        alert('Please select a priority');
+    if (taskDescription === '' || !priority) {
+        alert('Please fill out all fields');
         return;
     }
 
@@ -49,29 +38,13 @@ function addTask(e) {
 
     const li = document.createElement('li');
     li.className = 'collection-item';
-
-    // Set background color based on priority
-    if (taskObject.priority === 'high') {
-        li.style.backgroundColor = 'red';
-        li.style.color = 'white';
-    } else if (taskObject.priority === 'medium') {
-        li.style.backgroundColor = 'yellow';
-        li.style.color = 'black';
-    } else if (taskObject.priority === 'low') {
-        li.style.backgroundColor = 'green';
-        li.style.color = 'white';
-    }
+    li.style.backgroundColor = getPriorityColor(taskObject.priority);
 
     li.innerHTML = `<span class="task-description">${taskObject.description}</span>
                     <span class="task-due-date">${taskObject.dueDate}</span>`;
 
-    const removeIcon = document.createElement('a');
-    removeIcon.className = 'delete-item secondary-content';
-    removeIcon.innerHTML = '<i class="fa fa-remove"></i>';
-
-    const completeIcon = document.createElement('a');
-    completeIcon.className = 'complete-item secondary-content';
-    completeIcon.innerHTML = '<i class="fa fa-check"></i>';
+    const removeIcon = createIcon('fa-remove', 'delete-item');
+    const completeIcon = createIcon('fa-check', 'complete-item');
 
     li.appendChild(removeIcon);
     li.appendChild(completeIcon);
@@ -79,28 +52,20 @@ function addTask(e) {
     taskList.appendChild(li);
     storeTask(taskObject);
 
-    taskInput.value = '';
-    priority.checked = false;
-    document.querySelector('#due-date').value = '';
+    // Clear form fields
+    clearFormFields();
 }
-
 
 // Remove task function
 function removeTask(e) {
     if (e.target.parentElement.classList.contains('delete-item')) {
         if (confirm('Are You Sure?')) {
             e.target.parentElement.parentElement.remove();
+            removeTaskFromStorage(e.target.parentElement.parentElement);
         }
     } else if (e.target.parentElement.classList.contains('complete-item')) {
         const taskDescription = e.target.parentElement.parentElement.querySelector('.task-description').textContent.trim();
-
-        if (taskDescription) {
-            const li = document.createElement('li');
-            li.className = 'collection-item';
-            li.appendChild(document.createTextNode(taskDescription));
-            completedTasks.appendChild(li);
-        }
-
+        moveTaskToCompleted(taskDescription);
         e.target.parentElement.parentElement.remove();
     }
 }
@@ -114,9 +79,7 @@ function clearTasks() {
 // Clear completed tasks function
 function clearCompletedTasks() {
     completedTasks.innerHTML = '';
-    const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-    const uncompletedTasks = tasks.filter((task) => !task.completed);
-    localStorage.setItem('tasks', JSON.stringify(uncompletedTasks));
+    localStorage.removeItem('completedTasks');
 }
 
 // Store task in local storage
@@ -129,43 +92,7 @@ function storeTask(task) {
 // Load tasks from local storage on page load
 function loadTasks() {
     const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-
-    tasks.forEach(function (task) {
-        const li = document.createElement('li');
-        li.className = 'collection-item';
-
-        // Set background color and font color based on priority
-        if (task.priority === 'high') {
-            li.style.backgroundColor = 'red';
-            li.style.color = 'white';
-        } else if (task.priority === 'medium') {
-            li.style.backgroundColor = 'yellow';
-            li.style.color = 'black';
-        } else if (task.priority === 'low') {
-            li.style.backgroundColor = 'green';
-            li.style.color = 'white';
-        }
-
-        li.innerHTML = `<span class="task-description">${task.description}</span>
-                        <span class="task-due-date">${task.dueDate}</span>`;
-
-        const removeIcon = document.createElement('a');
-        removeIcon.className = 'delete-item secondary-content';
-        removeIcon.innerHTML = '<i class="fa fa-remove"></i>';
-
-        const completeIcon = document.createElement('a');
-        completeIcon.className = 'complete-item secondary-content';
-        completeIcon.innerHTML = '<i class="fa fa-check"></i>';
-
-        li.appendChild(removeIcon);
-        li.appendChild(completeIcon);
-
-        if (task.completed) {
-            completedTasks.appendChild(li);
-        } else {
-            taskList.appendChild(li);
-        }
-    });
+    tasks.forEach(task => renderTask(task));
 }
 
 // Initialize date picker
@@ -175,7 +102,73 @@ document.addEventListener('DOMContentLoaded', function () {
         format: 'yyyy-mm-dd',
     };
     var instances = M.Datepicker.init(elems, options);
+
+    loadTasks();
 });
 
-// Load tasks from local storage on page load
-loadTasks();
+// Utility functions
+function createIcon(iconClass, className) {
+    const icon = document.createElement('a');
+    icon.className = className + ' secondary-content';
+    icon.innerHTML = `<i class="fa ${iconClass}"></i>`;
+    return icon;
+}
+
+function getPriorityColor(priority) {
+    switch (priority) {
+        case 'high':
+            return 'red';
+        case 'medium':
+            return 'yellow';
+        case 'low':
+            return 'green';
+        default:
+            return '';
+    }
+}
+
+function clearFormFields() {
+    taskInput.value = '';
+    document.querySelectorAll('input[name="priority"]:checked').forEach(input => input.checked = false);
+    document.querySelector('#due-date').value = '';
+}
+
+function removeTaskFromStorage(taskElement) {
+    const taskDescription = taskElement.querySelector('.task-description').textContent.trim();
+    let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    tasks = tasks.filter(task => task.description !== taskDescription);
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+}
+
+function moveTaskToCompleted(taskDescription) {
+    let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    let completedTasks = JSON.parse(localStorage.getItem('completedTasks')) || [];
+    const taskIndex = tasks.findIndex(task => task.description === taskDescription);
+    if (taskIndex !== -1) {
+        const completedTask = tasks.splice(taskIndex, 1)[0];
+        completedTask.completed = true;
+        completedTasks.push(completedTask);
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+        localStorage.setItem('completedTasks', JSON.stringify(completedTasks));
+        renderTask(completedTask, true);
+    }
+}
+
+function renderTask(task, completed = false) {
+    const li = document.createElement('li');
+    li.className = 'collection-item';
+    li.style.backgroundColor = getPriorityColor(task.priority);
+    li.innerHTML = `<span class="task-description">${task.description}</span>
+                    <span class="task-due-date">${task.dueDate}</span>`;
+    const removeIcon = createIcon('fa-remove', 'delete-item');
+    li.appendChild(removeIcon);
+    if (!completed) {
+        const completeIcon = createIcon('fa-check', 'complete-item');
+        li.appendChild(completeIcon);
+    }
+    if (completed) {
+        completedTasks.appendChild(li);
+    } else {
+        taskList.appendChild(li);
+    }
+}
