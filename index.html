@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <title>To-Do-List</title>
+</head>
+<body>
+   <div class="container">
+    <div class="row">
+        <div class="col s12">
+            <div id="main" class="card">
+                <div class="card-content">
+                    <span class="card-title">To Do List</span>
+                    <div class="row">
+                        <form id="task-form">
+                            <div class="input-field col s12">
+                                <input type="text" name="task" id="task" />
+                                <label for="task">New Task</label>
+                            </div>
+                            <div class="input-field col s12">
+                                <p>
+                                    <label>
+                                        <input class="with-gap" name="priority" type="radio" value="high" />
+                                        <span>High Priority</span>
+                                    </label>
+                                </p>
+                                <p>
+                                    <label>
+                                        <input class="with-gap" name="priority" type="radio" value="medium" />
+                                        <span>Medium Priority</span>
+                                    </label>
+                                </p>
+                                <p>
+                                    <label>
+                                        <input class="with-gap" name="priority" type="radio" value="low" />
+                                        <span>Low Priority</span>
+                                    </label>
+                                </p>
+                            </div>
+                            <div class="input-field col s12">
+                                <input type="text" name="due-date" id="due-date" class="datepicker" />
+                                <label for="due-date">Due Date</label>
+                            </div>
+                            <input type="submit" value="Add task" class="btn" />
+                        </form>
+                    </div>
+                </div>
+                <div class="card-action">
+                    <h5 id="task-title">Tasks</h5>
+                    <ul class="collection"></ul>
+                    <a href="#" class="clear-tasks btn black">Clear All Tasks</a>
+                </div>
+                <div class="card-action">
+                    <h5 id="completed-task-title">Completed Tasks</h5>
+                    <ul class="completed-tasks collection"></ul>
+                    <a href="#" class="clear-completed-tasks btn black">Clear All Tasks</a>
+                </div>
+            </div>
+        </div>
+    </div>
+   </div>
+
+    <script
+        src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"
+    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="./app.js"></script>
+    <script>
+        // Initialize date picker
+        var elems = document.querySelectorAll('.datepicker');
+        var options = {
+            format: 'yyyy-mm-dd',
+        };
+        var instances = M.Datepicker.init(elems, options);
+    </script>
+</body>
+</html>
