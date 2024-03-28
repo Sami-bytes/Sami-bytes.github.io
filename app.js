@@ -117,11 +117,11 @@ function createIcon(iconClass, className) {
 function getPriorityColor(priority) {
     switch (priority) {
         case 'high':
-            return 'red';
+            return '#FF6961'; // Soft Red
         case 'medium':
-            return 'yellow';
+            return '#FFA07A'; // Soft Orange
         case 'low':
-            return 'green';
+            return '#77DD77'; // Soft Green
         default:
             return '';
     }
